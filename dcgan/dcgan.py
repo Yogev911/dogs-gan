@@ -31,7 +31,7 @@ def build_generator():
     model.add(Conv2D(64, kernel_size=3, padding="same"))
     model.add(BatchNormalization(momentum=0.8))
     model.add(Activation("relu"))
-    model.add(Conv2D(IMG_CHANNEL['RGB'], kernel_size=3, padding="same"))
+    model.add(Conv2D(IMG_CHANNEL, kernel_size=3, padding="same"))
     model.add(Activation("tanh"))
 
     model.summary()
@@ -78,7 +78,7 @@ def build_discriminator(img_shape, optimizer):
 
 class DCGAN():
     def __init__(self):
-        self.img_shape = (IMG_SIZE[0], IMG_SIZE[1], IMG_CHANNEL['RGB'])
+        self.img_shape = (IMG_SIZE[0], IMG_SIZE[1], IMG_CHANNEL)
         self.optimizer = get_optimazer()
 
         self.discriminator = build_discriminator(self.img_shape,self.optimizer)
@@ -119,7 +119,7 @@ class DCGAN():
             imgs = X_train[idx]
 
             # Sample noise and generate a batch of new images
-            noise = np.random.normal(0, 1, (batch_size, self.latent_dim))
+            noise = np.random.normal(0, 1, (batch_size, LATENT_DIM))
             gen_imgs = self.generator.predict(noise)
 
             # Train the discriminator (real classified as ones and generated as zeros)
