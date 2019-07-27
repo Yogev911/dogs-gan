@@ -1,6 +1,6 @@
 from __future__ import print_function, division
 
-from keras.datasets import mnist
+from keras.datasets import mnist, cifar10
 from keras.layers import Input, Dense, Reshape, Flatten, Dropout
 from keras.layers import BatchNormalization, Activation, ZeroPadding2D
 from keras.layers.advanced_activations import LeakyReLU
@@ -21,8 +21,8 @@ def get_optimazer():
 def build_generator():
     model = Sequential()
 
-    model.add(Dense(128 * 7 * 7, activation="relu", input_dim=LATENT_DIM))
-    model.add(Reshape((7, 7, 128)))
+    model.add(Dense(128 * 8 * 8, activation="relu", input_dim=LATENT_DIM))
+    model.add(Reshape((8, 8, 128)))
     model.add(UpSampling2D())
     model.add(Conv2D(128, kernel_size=3, padding="same"))
     model.add(BatchNormalization(momentum=0.8))
@@ -98,11 +98,11 @@ class DCGAN():
     def train(self, epochs, batch_size=128, save_interval=50):
 
         # Load the dataset
-        (X_train, _), (_, _) = mnist.load_data()
+        (X_train, _), (_, _) = cifar10.load_data()
 
         # Rescale -1 to 1
         X_train = X_train / 127.5 - 1.
-        X_train = np.expand_dims(X_train, axis=3)
+        # X_train = np.expand_dims(X_train, axis=3)
 
         # Adversarial ground truths
         valid = np.ones((batch_size, 1))
@@ -153,7 +153,7 @@ class DCGAN():
         cnt = 0
         for i in range(r):
             for j in range(c):
-                axs[i, j].imshow(gen_imgs[cnt, :, :, 0], cmap='gray')
+                axs[i, j].imshow(gen_imgs[cnt, :, :, :])#, cmap='gray')
                 axs[i, j].axis('off')
                 cnt += 1
         fig.savefig("images/mnist_%d.png" % epoch)
@@ -162,4 +162,4 @@ class DCGAN():
 
 if __name__ == '__main__':
     dcgan = DCGAN()
-    dcgan.train(epochs=4000, batch_size=32, save_interval=50)
+    dcgan.train(epochs=EPOCHS, batch_size=BATCH_SIZE, save_interval=100)
